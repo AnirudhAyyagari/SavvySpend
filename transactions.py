@@ -19,7 +19,6 @@ def record_transaction():
             "Category",
             "Merchant",
             "Payment Method",
-            "Location",
             "Description/Notes",
             "Frequency",
         ]
@@ -32,7 +31,6 @@ def record_transaction():
                 "Category",
                 "Merchant",
                 "Payment Method",
-                "Location",
                 "Description/Notes",
                 "Frequency",
             ]
@@ -51,7 +49,6 @@ def record_transaction():
             "Payment Method",
             ["Cash", "Credit Card", "Debit Card", "Other"],
         )
-        location = st.text_input("Location")
         description = st.text_area("Description/Notes")
         frequency = st.selectbox(
             "Frequency",
@@ -67,7 +64,6 @@ def record_transaction():
                 "Category": category,
                 "Merchant": merchant,
                 "Payment Method": payment_method,
-                "Location": location,
                 "Description/Notes": description,
                 "Frequency": frequency,
             }
