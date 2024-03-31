@@ -1,7 +1,7 @@
 import streamlit as st
 from welcome import display_welcome_screen
 from login import display_login_screen
-from record import record_transaction, display_transactions
+from transactions import record_transaction, display_transactions
 from visualisation import TransactionVisualizer
 
 
@@ -33,10 +33,7 @@ def main():
             visualizer = TransactionVisualizer("transactions.csv")
             visualizer.display_transactions()
             visualizer.plot_transaction_amount_distribution()
-            visualizer.plot_transaction_amount_by_category()
             visualizer.plot_transaction_amount_over_time()
-            visualizer.transaction_amount_over_time_by_category()
-            visualizer.interactive_visualizations()
 
         # Spacer to push the logout button to the bottom
         st.sidebar.write("")  # Empty line for spacing
