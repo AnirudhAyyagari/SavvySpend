@@ -12,29 +12,6 @@ logging.basicConfig(
 def record_transaction():
     """Record a new transaction with various details and append it to a CSV file."""
     st.title("Record a New Transaction")
-    transaction_df = pd.DataFrame(
-        columns=[
-            "Date/Time",
-            "Amount",
-            "Category",
-            "Merchant",
-            "Payment Method",
-            "Description/Notes",
-            "Frequency",
-        ]
-    )
-    if transaction_df.empty:
-        transaction_df = pd.DataFrame(
-            columns=[
-                "Date/Time",
-                "Amount",
-                "Category",
-                "Merchant",
-                "Payment Method",
-                "Description/Notes",
-                "Frequency",
-            ]
-        )
 
     with st.form(key="transaction_form"):
         # Collect transaction details from user input
@@ -70,11 +47,18 @@ def record_transaction():
             # Append the transaction to the transaction DataFrame
             new_row = pd.DataFrame([transaction])
             try:
-                transaction_df = pd.concat([transaction_df, new_row], ignore_index=True)
+                # Read existing data and append new transaction
+                existing_data = pd.read_csv("transactions.csv")
+                updated_data = pd.concat([existing_data, new_row], ignore_index=True)
                 # Save the updated transaction DataFrame to CSV
-                transaction_df.to_csv("transactions.csv", index=False, mode="a")
+                updated_data.to_csv("transactions.csv", index=False)
                 st.success("Transaction recorded successfully!")
                 logging.info("Transaction recorded successfully.")
+            except FileNotFoundError:
+                # Create a new CSV file with the transaction if the file does not exist
+                new_row.to_csv("transactions.csv", index=False)
+                st.success("Transaction recorded successfully in a new file!")
+                logging.info("Transaction recorded successfully in a new file.")
             except Exception as e:
                 st.error("Error recording transaction: {}".format(str(e)))
                 logging.error("Error recording transaction: {}".format(str(e)))
@@ -90,8 +74,12 @@ def display_transactions():
         else:
             st.write("No transactions recorded yet.")
     except FileNotFoundError:
-        st.write("No transactions recorded yet.")
-        logging.info("No transactions recorded yet.")
+        st.write(
+            "No transactions recorded yet. Please record a transaction to create the file."
+        )
+        logging.info(
+            "No transactions recorded yet. CSV file will be created upon recording the first transaction."
+        )
 
 
 if __name__ == "__main__":
