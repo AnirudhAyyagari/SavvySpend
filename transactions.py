@@ -8,19 +8,25 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-
 def record_transaction():
     """Record a new transaction with various details and append it to a CSV file."""
     st.title("Record a New Transaction")
+
+    categories = [
+        "Food & Beverages",
+        "Groceries",
+        "Transportation",
+        "Housing",
+        "Personal Care",
+        "Subscriptions & Memberships",
+        "Miscellaneous"
+    ]
 
     with st.form(key="transaction_form"):
         # Collect transaction details from user input
         date = st.date_input("Date/Time", value=datetime.today())
         amount = st.number_input("Amount", min_value=0.0, format="%.2f")
-        category = st.selectbox(
-            "Category",
-            ["Groceries", "Rent", "Utilities", "Transportation", "Other"],
-        )
+        category = st.selectbox("Category", categories)
         merchant = st.text_input("Merchant")
         payment_method = st.selectbox(
             "Payment Method",
@@ -31,6 +37,7 @@ def record_transaction():
             "Frequency",
             ["One-time", "Daily", "Weekly", "Monthly"],
         )
+
         submit_button = st.form_submit_button(label="Record Transaction")
 
         if submit_button:
@@ -53,15 +60,12 @@ def record_transaction():
                 # Save the updated transaction DataFrame to CSV
                 updated_data.to_csv("transactions.csv", index=False)
                 st.success("Transaction recorded successfully!")
-                logging.info("Transaction recorded successfully.")
             except FileNotFoundError:
                 # Create a new CSV file with the transaction if the file does not exist
                 new_row.to_csv("transactions.csv", index=False)
                 st.success("Transaction recorded successfully in a new file!")
-                logging.info("Transaction recorded successfully in a new file.")
             except Exception as e:
-                st.error("Error recording transaction: {}".format(str(e)))
-                logging.error("Error recording transaction: {}".format(str(e)))
+                st.error(f"Error recording transaction: {e}")
 
 
 def display_transactions():

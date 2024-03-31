@@ -3,6 +3,8 @@ from welcome import display_welcome_screen
 from login import display_login_screen
 from transactions import record_transaction, display_transactions
 from visualisation import TransactionVisualizer
+from budgets import set_category_budgets, check_budgets
+import pandas as pd
 
 
 def main():
@@ -22,10 +24,17 @@ def main():
         # Sidebar for navigation
         current_page = st.sidebar.radio(
             "Navigate",
-            ["Record Transaction", "Recorded Transactions", "Visualizations"],
+            [
+                "Set Budgets",
+                "Record Transaction",
+                "Recorded Transactions",
+                "Visualizations",
+            ],
         )
 
-        if current_page == "Record Transaction":
+        if current_page == "Set Budgets":
+            set_category_budgets()
+        elif current_page == "Record Transaction":
             record_transaction()
         elif current_page == "Recorded Transactions":
             display_transactions()
@@ -34,6 +43,17 @@ def main():
             visualizer.display_transactions()
             visualizer.plot_transaction_amount_distribution()
             visualizer.plot_transaction_amount_over_time()
+
+        # Check for budget exceedances after recording a transaction
+        if current_page == "Record Transaction":
+            try:
+                transactions_df = pd.read_csv("transactions.csv")
+                exceeded_categories = check_budgets(transactions_df)
+                if exceeded_categories:
+                    for category in exceeded_categories:
+                        st.warning(f"Budget exceeded for {category}!")
+            except FileNotFoundError:
+                st.warning("No transactions recorded yet.")
 
         # Spacer to push the logout button to the bottom
         st.sidebar.write("")  # Empty line for spacing
